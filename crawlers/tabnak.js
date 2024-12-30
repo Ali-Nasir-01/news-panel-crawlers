@@ -10,7 +10,9 @@ const newsItems = $(".parentsSPN");
 const results = [];
 
 const promises = newsItems.map(async (index, item) => {
+  const images = [];
   const $item = cheerio.load(item);
+  images.push($item("a.picLink > img").attr("src"));
   const link = `${baseUrl}${$item("a.picLink").attr("href")}`;
   const $singlePage = await cheerio.fromURL(link);
   const title = $singlePage(".top_news_title > div.title > h1.Htag").text(); // title
@@ -23,14 +25,9 @@ const promises = newsItems.map(async (index, item) => {
     .trim();
   const bodyItems = $singlePage("div#newsMainBody > p");
   const bodyText = []; // Text
-  const images = [];
   bodyItems.each((index, bodyItem) => {
     const $bodyItem = cheerio.load(bodyItem);
-    if ($bodyItem("img").length > 0) {
-      images.push($bodyItem("img").attr("src"));
-    } else {
-      bodyText.push($bodyItem.text());
-    }
+    bodyText.push($bodyItem.text());
   });
   results.push({
     link,
